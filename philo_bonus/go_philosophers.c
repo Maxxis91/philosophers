@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   go_philosophers.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jshk <loctopus@student.21-school.ru>       +#+  +:+       +#+        */
+/*   By: gmelissi <gmelissi@student.21-schoo>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/03 10:21:21 by jshk              #+#    #+#             */
-/*   Updated: 2022/05/03 11:07:21 by jshk             ###   ########.fr       */
+/*   Created: 2022/05/03 10:21:21 by gmelissi          #+#    #+#             */
+/*   Updated: 2022/06/28 23:06:05 by gmelissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,7 @@ int	philosopher_full(t_philo *philo, int *i)
 	{
 		(*i)++;
 		if (*i == philo->ar->times_must_eat)
-		{
-			sem_wait(philo->semaphore->write_sema);
-			printf("time (%lu) ms - philo (%d) is full\n", \
-				get_time() - philo->start, philo->order_ph);
-			sem_post(philo->semaphore->write_sema);
 			exit (1);
-		}
 	}
 	return (0);
 }
@@ -39,11 +33,12 @@ void	processing(t_philo *philo)
 	pthread_detach(death_thread);
 	while (!philo->ar->death_flag)
 	{
+		philo_think(philo);
 		philo_eat(philo);
-		if (philosopher_full(philo, &i))
-			exit (0);
 		philo_sleep(philo);
 		philo_think(philo);
+		if (philosopher_full(philo, &i))
+			exit (0);
 	}
 }
 
@@ -81,10 +76,11 @@ void	go_philosopher(t_list *all)
 		if (all->philo->pid[i] == 0)
 		{
 			all->philo->order_ph = i + 1;
+			all->philo->state = -1;
 			processing(all->philo);
 		}
 		else if (all->philo->pid[i] == -1)
-			error_msg("Doesn't create forks!");
+			error_msg("Error forking procs\n");
 		i++;
 	}
 	wait_loop(all);

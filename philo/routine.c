@@ -6,7 +6,7 @@
 /*   By: gmelissi <gmelissi@student.21-schoo>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/03 10:21:21 by gmelissi          #+#    #+#             */
-/*   Updated: 2022/06/28 01:06:28 by gmelissi         ###   ########.fr       */
+/*   Updated: 2022/06/28 17:59:13 by gmelissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,28 @@ void	time_for_eat_sleep(long ping_time)
 	}
 }
 
-static void switch_state(void *the_philosopher, int state)
+static void	switch_state(t_philo *philosopher, int state)
 {
-	t_philo	*philosopher;
-
-	philosopher = (t_philo *)the_philosopher;
-	
+	if (!state)
+	{
+		if (philosopher->state)
+			display_info(philosopher, "is thinking");
+	}
+	if (state == 1)
+	{
+		locking(philosopher);
+		philosopher->check_point_eat = get_time();
+		display_info(philosopher, "is eating");
+		time_for_eat_sleep(philosopher->ar->time_to_eat);
+		unlocking(philosopher);
+		philosopher->times_eat--;
+	}
+	if (state == 2)
+	{
+		display_info(philosopher, "is sleeping");
+		time_for_eat_sleep(philosopher->ar->time_to_sleep);
+	}
+	philosopher->state = state;
 }
 
 void	*eat_think_sleep_repeat(void *the_philosopher)
@@ -45,18 +61,10 @@ void	*eat_think_sleep_repeat(void *the_philosopher)
 	{
 		if (philosopher->times_eat)
 		{
-			display_info(philosopher, "is thinking");
-			locking(philosopher);
-			display_info(philosopher, "is eating");
-
-			time_for_eat_sleep(philosopher->ar->time_to_eat);
-			if (philosopher->times_eat > 0)
-				philosopher->times_eat--;
-			unlocking(philosopher);
-			philosopher->check_point_eat = get_time();
-			display_info(philosopher, "is sleeping");
-			time_for_eat_sleep(philosopher->ar->time_to_sleep);
-			display_info(philosopher, "is thinking");
+			switch_state(philosopher, 0);
+			switch_state(philosopher, 1);
+			switch_state(philosopher, 2);
+			switch_state(philosopher, 0);
 		}
 		else
 			break ;

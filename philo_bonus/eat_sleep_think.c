@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   eat_sleep_think.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jshk <loctopus@student.21-school.ru>       +#+  +:+       +#+        */
+/*   By: gmelissi <gmelissi@student.21-schoo>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/03 10:21:21 by jshk              #+#    #+#             */
-/*   Updated: 2022/05/03 11:07:21 by jshk             ###   ########.fr       */
+/*   Created: 2022/05/03 10:21:21 by gmelissi          #+#    #+#             */
+/*   Updated: 2022/06/28 23:14:01 by gmelissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,39 +28,52 @@ void	sleep_time(long ping)
 
 void	philo_think(t_philo *philo)
 {
-	sem_wait(philo->semaphore->write_sema);
-	if (philo->ar->death_flag == 0)
-		printf("time (%lu) ms - philo (%d) is thinking\n", \
-		get_time() - philo->start, philo->order_ph);
-	sem_post(philo->semaphore->write_sema);
+	if (philo->state)
+	{
+		sem_wait(philo->semaphore->write_sema);
+		if (!philo->ar->death_flag)
+			printf("%lu %d is thinking\n", \
+			get_time() - philo->start, philo->order_ph);
+		sem_post(philo->semaphore->write_sema);
+		philo->state = 0;
+	}
 }
 
 void	philo_sleep(t_philo *philo)
 {
 	sem_wait(philo->semaphore->write_sema);
-	if (philo->ar->death_flag == 0)
-		printf("time (%lu) ms - philo (%d) is sleeping\n", \
+	if (!philo->ar->death_flag)
+		printf("%lu %d is sleeping\n", \
 		get_time() - philo->start, philo->order_ph);
 	sem_post(philo->semaphore->write_sema);
 	sleep_time(philo->ar->time_to_sleep);
+	philo->state = 2;
 }
 
 void	philo_eat(t_philo *philo)
 {
 	sem_wait(philo->semaphore->forks);
 	sem_wait(philo->semaphore->write_sema);
-	if (philo->ar->death_flag == 0)
-		printf("time (%lu) ms - philo (%d) is taking forks\n", \
+	if (!philo->ar->death_flag)
+		printf("%lu %d has taken a fork\n", \
+		get_time() - philo->start, philo->order_ph);
+	sem_post(philo->semaphore->write_sema);
+	sem_wait(philo->semaphore->forks);
+	sem_wait(philo->semaphore->write_sema);
+	if (!philo->ar->death_flag)
+		printf("%lu %d has taken a fork\n", \
 		get_time() - philo->start, philo->order_ph);
 	sem_post(philo->semaphore->write_sema);
 	sem_wait(philo->semaphore->write_sema);
-	if (philo->ar->death_flag == 0)
-		printf("time (%lu) ms - philo (%d) is eating\n", \
+	if (!philo->ar->death_flag)
+		printf("%lu %d is eating\n", \
 		get_time() - philo->start, philo->order_ph);
 	sem_post(philo->semaphore->write_sema);
 	philo->last = get_time() - philo->start;
 	sleep_time(philo->ar->time_to_eat);
 	sem_post(philo->semaphore->forks);
+	sem_post(philo->semaphore->forks);
+	philo->state = 1;
 }
 
 void	*check_death(void *philosopher)
@@ -75,7 +88,7 @@ void	*check_death(void *philosopher)
 		> philo->ar->time_to_die)
 		{
 			sem_wait(philo->semaphore->write_sema);
-			printf("time (%lu) - Philo (%d) is dead\n", \
+			printf("%lu %d died\n", \
 			get_time() - philo->start, philo->order_ph);
 			philo->ar->death_flag = 1;
 			exit (0);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jshk <loctopus@student.21-school.ru>       +#+  +:+       +#+        */
+/*   By: gmelissi <gmelissi@student.21-schoo>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/03 10:21:21 by jshk              #+#    #+#             */
-/*   Updated: 2022/05/03 11:07:21 by jshk             ###   ########.fr       */
+/*   Created: 2022/05/03 10:21:21 by gmelissi          #+#    #+#             */
+/*   Updated: 2022/06/28 22:45:07 by gmelissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_arg
 typedef struct s_philo
 {
 	int				order_ph;
+	int				state;
 	long			start;
 	long			last;
 	t_sema			*semaphore;
@@ -77,7 +78,7 @@ int		ft_atoi(const char *str);
 void	error_msg(char *msg);
 long	get_time(void);
 void	mem_free(t_list *all);
-int		ft_strlen(char *str);
+size_t	ft_strlen(const char *str);
 
 /* init.c */
 void	init_arguments(char **argv, t_list *first);

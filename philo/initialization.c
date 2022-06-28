@@ -60,7 +60,7 @@ void	init_philosophers(t_arg *ar)
 		ar->philo[i].ar = ar;
 		if (i < ar->num_of_philo - 1)
 			ar->philo[i].right = (i + 1);
-		ar->philo[i].state = 0;
+		ar->philo[i].state = -1;
 	}
 	if (ar->num_of_philo != 1)
 		ar->philo[--i].right = 0;
