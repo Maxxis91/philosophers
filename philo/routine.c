@@ -6,7 +6,7 @@
 /*   By: gmelissi <gmelissi@student.21-schoo>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/03 10:21:21 by gmelissi          #+#    #+#             */
-/*   Updated: 2022/06/28 17:59:13 by gmelissi         ###   ########.fr       */
+/*   Updated: 2022/06/29 03:34:35 by gmelissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	time_for_eat_sleep(long ping_time)
 	cut = present_time + ping_time;
 	while (cut > present_time)
 	{
-		usleep(100);
+		usleep(1);
 		present_time = get_time();
 	}
 }
